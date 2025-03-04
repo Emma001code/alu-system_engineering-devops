@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-# Creates RSA key pair
-
-ssh-keygen -b 4096 -f school -t rsa -N betty
+# Generate compliant RSA key pair with passphrase and strict permissions
+mkdir -p ~/.ssh  # Ensure directory exists
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/school -N "betty" -q <<<y 2>&1 >/dev/null
+chmod 600 ~/.ssh/school
