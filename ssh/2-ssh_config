@@ -1,0 +1,5 @@
+# ~/.ssh/config
+# Configure SSH client to use private key and disable passwords
+Host *
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
