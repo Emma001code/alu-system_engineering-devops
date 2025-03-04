@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Generate compliant RSA key pair with passphrase and strict permissions
+# Creates RSA key pair with passphrase and strict permissions
 
-ssh-keygen -t rsa -b 4096 -f school -N "betty" 
-
+ssh-keygen -b 4096 -f school -t rsa -N betty
