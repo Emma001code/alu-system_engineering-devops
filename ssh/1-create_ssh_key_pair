@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 # Generating RSA key pair with the following parameters
 ssh-keygen -t rsa -b 4096 -f school -N "betty"
+~
+
