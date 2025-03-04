@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
-# creates a new Rsa key pair, 4096 bits and passphrase - betty
+#!/usr/bin/env bash:wq
 
-ssh-keygen -f school -b 4096 -N betty
+# create new RSA key pair
+ssh-keygen -t rsa -b 4096 -C "school" -N "betty" -f school
+
+# Display success message
+echo "RSA key pair generated successfully."
