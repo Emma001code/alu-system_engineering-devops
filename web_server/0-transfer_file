@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
-# Script to transfer a file from a client to a remote server
+# Script to securely transfer a file to a remote server using scp.
+# StrictHostKeyChecking is disabled for convenience but may pose a security risk.
 
-# Check if exactly four parameters are provided
+# Ensure the required arguments are provided.
 if [ "$#" -ne 4 ]; then
-    echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
+    echo "Usage: $0 <file_path> <server_ip> <username> <ssh_key_path>"
     exit 1
 fi
 
-# Assign variables to input arguments for readability
-PATH_TO_FILE=$1
-SERVER_IP=$2
-USERNAME=$3
-SSH_KEY=$4
+# Assign arguments to descriptive variables.
+FILE_PATH="$1"
+SERVER_IP="$2"
+USER_NAME="$3"
+SSH_KEY_PATH="$4"
 
-# Use scp to transfer the file to the user's home directory on the server
-scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "$PATH_TO_FILE" "$USERNAME@$SERVER_IP:~/"
+# Transfer the file to the user's home directory on the server.
+scp -i "$SSH_KEY_PATH" -o StrictHostKeyChecking=no "$FILE_PATH" "${USER_NAME}@${SERVER_IP}:~/"
+
+# Check if the file transfer was successful.
+if [ "$?" -eq 0 ]; then
+    echo "File successfully transferred to ${USER_NAME}@${SERVER_IP}"
+else
+    echo "File transfer failed."
+    exit 2
+fi
+
