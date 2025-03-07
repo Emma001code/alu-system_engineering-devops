@@ -1,36 +1,27 @@
 #!/usr/bin/env bash
-# Transfers a file from client to server using SCP
+# Script to securely transfer a file to a remote server using scp.
+# StrictHostKeyChecking is disabled for convenience but may pose a security risk.
 
-# Check parameter count
+# Ensure the required arguments are provided.
 if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY" >&2
+    echo "Usage: $0 <file_path> <server_ip> <username> <ssh_key_path>"
     exit 1
 fi
 
-FILE="$1"
-IP="$2"
-USER="$3"
-KEY="$4"
+# Assign arguments to descriptive variables.
+FILE_PATH="$1"
+SERVER_IP="$2"
+USER_NAME="$3"
+SSH_KEY_PATH="$4"
 
-# Validate file existence
-if [ ! -f "$FILE" ]; then
-    echo "Error: File '$FILE' not found." >&2
-    exit 1
-fi
+# Transfer the file to the user's home directory on the server.
+scp -i "$SSH_KEY_PATH" -o StrictHostKeyChecking=no "$FILE_PATH" "${USER_NAME}@${SERVER_IP}:~/"
 
-# Validate SSH key existence and permissions
-if [ ! -f "$KEY" ]; then
-    echo "Error: SSH key '$KEY' not found." >&2
-    exit 1
-elif [ "$(stat -c %a "$KEY")" != "600" ]; then
-    echo "Error: SSH key must have 600 permissions." >&2
-    exit 1
-fi
-
-# Transfer file with error handling
-if scp -o StrictHostKeyChecking=no -i "$SSH_KEY" "$FILE" "${USERNAME}@${IP}:~/" then
-    echo "File transferred to ~/$(basename "$FILE") on $IP."
+# Check if the file transfer was successful.
+if [ "$?" -eq 0 ]; then
+    echo "File successfully transferred to ${USER_NAME}@${SERVER_IP}"
 else
-    echo "Transfer failed. pls Check ur network, credentials, or server settings." >&2
-    exit 1
+    echo "File transfer failed."
+    exit 2
 fi
+
