@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Configure your Nginx server so that /redirect_me is redirecting to another page
+# Page redirection
 
-sudo apt-get update
-sudo apt-get install -y nginx
+sudo apt-get update -y
+sudo apt-get install nginx -y
+sudo allow ufw 80
+echo "Holberton School" | sudo tee /var/www/html/index.html
 
-echo "Hello World!" | sudo tee /var/www/html/index.html
-new_route="server_name _;\n\trewrite ^\/redirect_me https://github.com/Emma001code permanent;"
-sudo sed -i "s|server_name _;|$new_route|" /etc/nginx/sites-enabled/default
+redirection="server_name _;\n\trewrite ^\/redirect_me https:\/\/www.blog.ehoneahobed.com permanent;"
+sudo sed -i "s/server_name _;/$redirection/" /etc/nginx/sites-available/default
 
 sudo service nginx restart
