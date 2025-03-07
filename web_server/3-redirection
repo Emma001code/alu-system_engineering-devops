@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Script to set up an Nginx server and configure a page redirection.
+
+# Update package lists and install Nginx.
+sudo apt-get -y update
+sudo apt-get -y install nginx
+
+# Allow HTTP traffic through the firewall.
+sudo ufw allow 'Nginx HTTP'
+
+# Create an index file with the text "Holberton School".
+echo "Holberton School" | sudo tee /var/www/html/index
+
+# Add a redirection rule to the default Nginx site configuration.
+sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me www.youtube.com/@yourbestsoftdev001/ permanent;' /etc/nginx/sites-available/default
+
+# Restart the Nginx service to apply changes.
+sudo service nginx restart
+
