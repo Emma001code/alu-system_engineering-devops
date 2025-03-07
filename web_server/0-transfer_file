@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Check if exactly four arguments are provided
+if [ "$#" -ne 4 ]; then
+    echo "Usage: 0-transfer_file PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY" >&2
+    exit 1
+fi
+
+# Assign parameters to human-readable variables
+FILE_PATH="$1"
+SERVER_IP="$2"
+USERNAME="$3"
+SSH_KEY="$4"
+
+# Check if the source file exists
+if [ ! -f "$FILE_PATH" ]; then
+    echo "Error: The file '$FILE_PATH' does not exist." >&2
+    exit 1
+fi
+
+# Check if the SSH key exists
+if [ ! -f "$SSH_KEY" ]; then
+    echo "Error: The SSH key '$SSH_KEY' does not exist." >&2
+    exit 1
+fi
+
+# Transfer the file with clear feedback
+echo "Transferring '$FILE_PATH' to $USERNAME@$SERVER_IP..."
+scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "$FILE_PATH" "$USERNAME@$SERVER_IP:~/"
+
+# Check if the transfer succeeded
+if [ $? -eq 0 ]; then
+    echo "File transferred successfully to ~/ on $SERVER_IP."
+else
+    echo "Error: File transfer failed. pls Check your network, credentials, or server settings." >&2
+    exit 1
+fi
