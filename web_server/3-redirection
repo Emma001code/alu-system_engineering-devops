@@ -1,52 +1,11 @@
 #!/usr/bin/env bash
-# Configures an Nginx server so that /redirect_me redirects to another page.
-# The redirection is configured as a "301 Moved Permanently"
+# Page redirection
 
-# Update package lists to ensure access to the latest versions of packages.
-apt-get update
+sudo apt-get -y update
+sudo apt-get -y install nginx
 
-<<<<<<< HEAD
-# Install the Nginx web server.
-apt-get install -y nginx
+sudo ufw allow 'Nginx HTTP'
+echo "Holberton School" | sudo tee /var/www/html/index
 
-# Create the directory where the HTML files will be stored.
-mkdir /etc/nginx/html
-
-# Create an index.html file in the HTML directory.
-touch /etc/nginx/html/index.html
-
-# Add the text "Holberton School" to the index.html file.
-echo "Holberton School" > /etc/nginx/html/index.html
-
-# Write a new server block configuration directly into the Nginx default site file.
-printf %s "server {
-    listen 80;                        # Listen for incoming traffic on port 80 (HTTP).
-    listen [::]:80 default_server;    # Listen for IPv6 traffic on port 80.
-
-    root   /etc/nginx/html;           # Set the root directory for serving files.
-    index  index.html index.htm;      # Specify the default index files.
-
-    location / {                      # Define the root location for the server.
-	try_files \$uri \$uri/ =404;    # Try to serve the file, the directory, or return a 404 if not found.
-    }
-
-    location /redirect_me {           # Define a specific location for /redirect_me.
-        return 301 https://www.youtube.com/watch?v=7VAI73roXaY&list=PPSV;
-                                      # Redirect to the given YouTube URL with a "301 Moved Permanently" status.
-    }
-}" > /etc/nginx/sites-available/default
-
-# Restart the Nginx service to apply the changes made to the configuration.
-service nginx restart
-=======
-# Create an index.html file with the text "Holberton School".
-echo "Holberton School" | sudo tee /var/www/html/index.html
-
-# Add a redirection rule to the default Nginx site configuration.
-REDIRECT_URL="https://www.youtube.com/@yourbestsoftdev001/"
-sudo sed -i "/listen 80 default_server/a rewrite ^/redirect_me $REDIRECT_URL permanent;" /etc/nginx/sites-available/default
-
-# Restart the Nginx service to apply changes.
-sudo systemctl restart nginx
->>>>>>> f6cb2fef3f02e80e6bffc459f403b2b238cb4794
-
+sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4/ permanent;' /etc/nginx/sites-available/default
+sudo service nginx restart
