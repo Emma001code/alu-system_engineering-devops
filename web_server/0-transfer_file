@@ -28,7 +28,7 @@ elif [ "$(stat -c %a "$KEY")" != "600" ]; then
 fi
 
 # Transfer file with error handling
-if scp -i "$KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$FILE" "$USER@$IP:~"; then
+if scp -o StrictHostKeyChecking=no -i "$SSH_KEY" "$FILE" "${USERNAME}@${IP}:~/" then
     echo "File transferred to ~/$(basename "$FILE") on $IP."
 else
     echo "Transfer failed. pls Check ur network, credentials, or server settings." >&2
