@@ -1,19 +1,40 @@
 #!/usr/bin/env bash
-# Script to set up an Nginx server and configure a page redirection.
+# Configures an Nginx server so that /redirect_me redirects to another page.
+# The redirection is configured as a "301 Moved Permanently"
 
-# Update package lists and install Nginx.
-sudo apt-get -y update
-sudo apt-get -y install nginx
+# Update package lists to ensure access to the latest versions of packages.
+apt-get update
 
-# Allow HTTP traffic through the firewall.
-sudo ufw allow 'Nginx HTTP'
+# Install the Nginx web server.
+apt-get install -y nginx
 
-# Create an index file with the text "Holberton School".
-echo "Holberton School" | sudo tee /var/www/html/index
+# Create the directory where the HTML files will be stored.
+mkdir /etc/nginx/html
 
-# Add a redirection rule to the default Nginx site configuration.
-sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me www.youtube.com/@yourbestsoftdev001/ permanent;' /etc/nginx/sites-available/default
+# Create an index.html file in the HTML directory.
+touch /etc/nginx/html/index.html
 
-# Restart the Nginx service to apply changes.
-sudo service nginx restart
+# Add the text "Holberton School" to the index.html file.
+echo "Holberton School" > /etc/nginx/html/index.html
+
+# Write a new server block configuration directly into the Nginx default site file.
+printf %s "server {
+    listen 80;                        # Listen for incoming traffic on port 80 (HTTP).
+    listen [::]:80 default_server;    # Listen for IPv6 traffic on port 80.
+
+    root   /etc/nginx/html;           # Set the root directory for serving files.
+    index  index.html index.htm;      # Specify the default index files.
+
+    location / {                      # Define the root location for the server.
+	try_files \$uri \$uri/ =404;    # Try to serve the file, the directory, or return a 404 if not found.
+    }
+
+    location /redirect_me {           # Define a specific location for /redirect_me.
+        return 301 https://www.youtube.com/watch?v=7VAI73roXaY&list=PPSV;
+                                      # Redirect to the given YouTube URL with a "301 Moved Permanently" status.
+    }
+}" > /etc/nginx/sites-available/default
+
+# Restart the Nginx service to apply the changes made to the configuration.
+service nginx restart
 
