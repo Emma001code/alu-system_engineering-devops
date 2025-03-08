@@ -1,11 +1,31 @@
 #!/usr/bin/env bash
-# Configure your Nginx server to have a custom 404 page that contains the string `Ceci n'est pas une page`
+# Script to configure Nginx with a custom 404 error page displaying the message "Ceci n'est pas une page."
 
+# Update the package list to ensure access to the latest versions of packages.
 sudo apt-get update
+
+# Install Nginx if it is not already installed.
 sudo apt-get install -y nginx
 
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
-new_error_page="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
-sudo sed -i "s|listen 80 default_server;|$new_error_page|" /etc/nginx/sites-enabled/default
+# Create the custom 404 error page with the required content.
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/custom_404.html
 
+# Back up the original Nginx configuration file for safety.
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+
+# Define the new configuration snippet for handling 404 errors.
+custom_error_config="
+    listen 80 default_server;
+    error_page 404 /custom_404.html;
+    location = /custom_404.html {
+        root /var/www/html;
+        internal;
+    }
+"
+
+# Replace the existing `listen 80 default_server` directive with the new configuration.
+sudo sed -i "s|listen 80 default_server;|$custom_error_config|" /etc/nginx/sites-available/default
+
+# Restart Nginx to apply the new configuration.
 sudo service nginx restart
+

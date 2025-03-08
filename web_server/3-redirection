@@ -1,21 +1,43 @@
 #!/usr/bin/env bash
-# Configuring Nginx for to redirect permanently
+# Script to configure Nginx and set up a permanent redirect for a specific path.
 
-apt-get -y update
-apt-get install -y nginx
+# Update the package list to ensure we can install the latest version of Nginx.
+sudo apt-get -y update
+
+# Install Nginx, a popular web server for serving HTTP content.
+sudo apt-get install -y nginx
+
+# Update permissions for the Nginx document root directory.
 sudo chown -R "$USER":"$USER" /var/www/html
-sudo chown -R "$USER":"$USER" /etc/nginx/sites-available/default
+
+# Backup the default Nginx configuration file before making changes.
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+
+# Create a simple index page to serve as the default homepage.
 echo "Holberton School" | sudo tee /var/www/html/index.html
-echo "server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        root /var/www/html;
-        index index.html index.htm index.nginx-debian.html;
-        server_name _;
-        location /redirect_me {
-                return 301 https://www.youtube.com/watch?v=-VGIt10m9VQ;
-        }
-}" | sudo tee /etc/nginx/sites-available/default
+
+# Define the new Nginx configuration, including the redirect for `/redirect_me`.
+nginx_config="server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=-VGIt10m9VQ;
+    }
+}"
+
+# Replace the default Nginx configuration with the new configuration.
+echo "$nginx_config" | sudo tee /etc/nginx/sites-available/default
+
+# Restore root ownership of the modified configuration and web directory.
 sudo chown -R root:root /var/www/html
 sudo chown -R root:root /etc/nginx/sites-available/default
+
+# Restart the Nginx service to apply the new configuration.
 sudo service nginx restart
+
