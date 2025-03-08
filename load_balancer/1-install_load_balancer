@@ -1,25 +1,37 @@
 #!/usr/bin/env bash
-# Setup haproxy on server lb-01 to serve web-01 and web-02.
+# This script sets up HAProxy on a load balancer server (lb-01) to distribute traffic between two web servers: web-01 and web-02.
 
+# Update the package list to ensure we have the latest information.
 sudo apt-get -y update
+
+# Install HAProxy, a reliable and high-performance load balancer.
 sudo apt-get -y install haproxy
 
-# Enable HAProxy to be started by init script
-echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
+# Enable HAProxy to start automatically on system boot.
+# This is required for older versions of HAProxy where ENABLED needs to be set explicitly.
+echo "ENABLED=1" | sudo tee /etc/default/haproxy
 
-# Backup original config
-sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.original
+# Backup the default HAProxy configuration file for safety.
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
 
-echo \
+# Define the HAProxy configuration for load balancing.
+# The frontend listens on port 80 and forwards traffic to the backend.
+# The backend uses a round-robin algorithm to distribute traffic between the servers.
+haproxy_config="
+frontend http_front
+    bind *:80
+    mode http
+    default_backend http_back
+
+backend http_back
+    balance roundrobin
+    server web-01 18.204.210.42 check
+    server web-02 52.87.183.51 check
 "
-frontend lb-frontend
-        bind *:80
-        mode http
-        default_backend lb-backend
-backend lb-backend
-        balance roundrobin
-        server web-01 3.82.201.188:80 check
-        server web-02 52.91.1.164:80 check
-" | sudo tee -a /etc/haproxy/haproxy.cfg
 
+# Append the configuration to the HAProxy config file.
+echo "$haproxy_config" | sudo tee -a /etc/haproxy/haproxy.cfg
+
+# Restart the HAProxy service to apply the new configuration.
 sudo service haproxy restart
+
