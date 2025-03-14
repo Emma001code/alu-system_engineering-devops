@@ -1,0 +1,11 @@
+#!/bin/bash
+# Block all incoming traffic except SSH/HTTP/HTTPS
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+# FOR SSH
+sudo ufw allow 22/tcp    
+# FOR HTTP
+sudo ufw allow 80/tcp    
+# FOR HTTPS
+sudo ufw allow 443/tcp   
+sudo ufw enable
