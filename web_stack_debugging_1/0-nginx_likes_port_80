@@ -1,4 +1,4 @@
-#!/usr/bin/ env bash
+#!/usr/bin/env bash
 # This script actuall configures an nginx server so listen on port 80.
 
 # Omits the default Nginx configuration file 
