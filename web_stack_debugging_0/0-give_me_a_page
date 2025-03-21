@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
-# This particular script contains information that fixes apache serversudo service apache start
+# start apache so to be able to return a 
+# page containing Hello Holberton
+service apache2 start
 
